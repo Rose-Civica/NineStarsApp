@@ -1,7 +1,4 @@
-﻿import React from 'react';
-import ReactDOM from 'react-dom';
-
-var possibleCombinationSum = function (arr, n) {
+﻿var possibleCombinationSum = function (arr, n) {
     if (arr.indexOf(n) >= 0) { return true; }
     if (arr[0] > n) { return false; }
     if (arr[arr.length - 1] > n) {
@@ -102,8 +99,8 @@ Numbers.list = _.range(1, 10);
 
 const Timer = (props) => {
     return (
-        <div id="mycounter" className="text-center">
-            {props.seconds} seconds left!
+        <div id="myTimer" className="text-center">
+            <strong>{props.seconds}</strong> seconds remaining!
  	 </div>);
 };
 
@@ -128,10 +125,42 @@ class Game extends React.Component {
         answerIsCorrect: null,
         redraws: 5,
         doneStatus: null,
-        seconds: 0
+        seconds: 30
     });
-    state = Game.initialState();
+    constructor() {
+        super();
+        this.state = Game.initialState();
+        this.timer = 0;
+    }
     resetGame = () => { this.setState(Game.initialState()) };
+    stopTimer = () => {
+        clearInterval(this.timer);
+        this.timer = 0;
+    };
+    startTimer = () => {
+        if (this.timer == 0) {
+            this.timer = setInterval(this.countDown, 1000);
+        }
+    };
+    countDown = () => {
+        // Remove one second, set state so a re-render happens.
+        let seconds = this.state.seconds - 1;
+        this.setState({
+            seconds: seconds,
+        });
+        if (this.state.seconds === 0) {
+            this.stopTimer();
+            this.timeUp();
+        }
+        if (this.state.doneStatus) {
+            this.stopTimer();
+        }
+    };
+    timeUp = () => {
+        this.setState({
+            doneStatus: "Time's Up!",
+        });
+    }
     selectNumber = (clickedNumber) => {
         if (this.state.selectedNumbers.indexOf(clickedNumber) >= 0) {
             return;
@@ -140,6 +169,7 @@ class Game extends React.Component {
             this.setState(prevState => ({
                 gameStart: true
             }));
+            this.startTimer();
         }
         this.setState(prevState => ({
             answerIsCorrect: null,
@@ -192,13 +222,7 @@ class Game extends React.Component {
             if (prevState.redraws === 0 && !this.possibleSolutionsExist(prevState)) {
                 return { doneStatus: 'Game Over! :(' };
             }
-            if (prevState.seconds === 0) {
-                return { doneStatus: 'Game Over! :(' };
-            }
         });
-    };
-    startTimer = () => {
-
     };
     render() {
         const {
@@ -210,7 +234,7 @@ class Game extends React.Component {
             doneStatus,
             gameStart,
             seconds
-        } = this.state;
+    } = this.state;
         return (
             <div className="container">
                 <h3>Play Nine</h3>
@@ -218,25 +242,28 @@ class Game extends React.Component {
                 <div className="row">
                     <Stars numberOfStars={randomNumberOfStars} />
                     <Button selectedNumbers={selectedNumbers}
-                            checkAnswer={this.checkAnswer}
-                            answerIsCorrect={answerIsCorrect}
-                            acceptAnswer={this.acceptAnswer}
-                            redraw={this.redraw}
-                            redraws={redraws} />
+                        checkAnswer={this.checkAnswer}
+                        answerIsCorrect={answerIsCorrect}
+                        acceptAnswer={this.acceptAnswer}
+                        redraw={this.redraw}
+                        redraws={redraws} />
                     <Answer selectedNumbers={selectedNumbers}
-                            unselectNumber={this.unselectNumber} />
+                        unselectNumber={this.unselectNumber} />
                 </div>
                 <br />
                 {doneStatus ?
                     <DoneFrame doneStatus={doneStatus}
-                        resetGame={this.resetGame} /> :
+                        resetGame={this.resetGame}
+                        stopTimer={this.stopTimer} /> :
                     <Numbers selectedNumbers={selectedNumbers}
                         selectNumber={this.selectNumber}
                         usedNumbers={usedNumbers}
                         gameStart={gameStart} />
                 }
                 {gameStart ?
-                    <Timer seconds={seconds} startTimer={this.startTimer} /> :
+                    (doneStatus ?
+                        <div></div> :
+                        <Timer seconds={seconds} />) :
                     <div></div>}
             </div>
         );

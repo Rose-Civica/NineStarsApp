@@ -1,5 +1,35 @@
-﻿body {
-  /* Uncomment this to enable scrolling and zooming
-  touch-action: manipulation;
-  */
+﻿.mountNode {
+    color: #333;
+}
+
+.fa-star {
+    margin: 0.5em;
+    font-size: 24px;
+}
+
+span {
+    display: inline-block;
+    margin: 0.5em;
+    text-align: center;
+    background-color: #ccc;
+    width: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.selected {
+    background-color: #eee;
+    color: #ddd;
+    cursor: not-allowed;
+}
+
+.used {
+    background-color: #ffbbff;
+    color: #dd99dd;
+    cursor: not-allowed;
+}
+
+#myTimer {
+    font-size: 50px;
+    color: red
 }
