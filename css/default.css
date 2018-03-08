@@ -31,5 +31,14 @@ span {
 
 #myTimer {
     font-size: 50px;
-    color: red
+    color: rgba(255, 68, 85, 0.4);
+    opacity: 60%;
+}
+
+.gameWin {
+    color: blue;
+}
+
+.gameLose {
+    color: red;
 }

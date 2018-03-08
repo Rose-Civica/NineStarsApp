@@ -30,13 +30,16 @@ const Button = (props) => {
     switch (props.answerIsCorrect) {
         case true:
             button =
-                <button className="btn btn-success" onClick={props.acceptAnswer}>
+                <button className="btn btn-success"
+                    onClick={props.acceptAnswer}
+                    disabled={props.doneStatus}>
                     <i className="fa fa-check"></i>
                 </button>;
             break;
         case false:
             button =
-                <button className="btn btn-danger">
+                <button className="btn btn-danger"
+                    disabled={props.doneStatus}>
                     <i className="fa fa-times"></i>
                 </button>;
             break;
@@ -44,7 +47,7 @@ const Button = (props) => {
             button =
                 <button className="btn"
                     onClick={props.checkAnswer}
-                    disabled={props.selectedNumbers.length === 0}>
+                    disabled={props.selectedNumbers.length === 0 || props.doneStatus}>
                     =
     	  </button>;
             break;
@@ -54,7 +57,7 @@ const Button = (props) => {
             {button}
             <br /><br />
             <button className="btn btn-warning btn-sm" onClick={props.redraw}
-                disabled={props.redraws === 0}>
+                disabled={props.redraws === 0 || props.doneStatus}>
                 <i className="fas fa-sync"></i>
                 <strong className="space"> {props.redraws}</strong>
             </button>
@@ -86,8 +89,8 @@ const Numbers = (props) => {
             <div>
                 {Numbers.list.map((number, i) =>
                     <span key={i}
-                        className={numberClassName(number)}
-                        onClick={() => props.selectNumber(number)} >
+                          className={numberClassName(number)}
+                          onClick={() => props.selectNumber(number)}>
                         {number}
                     </span>
                 )}
@@ -95,7 +98,7 @@ const Numbers = (props) => {
         </div>
     );
 };
-Numbers.list = _.range(1, 10);
+
 
 const Timer = (props) => {
     return (
@@ -107,7 +110,10 @@ const Timer = (props) => {
 const DoneFrame = (props) => {
     return (
         <div className="text-center">
-            <h2>{props.doneStatus}</h2>
+            <h2 className={props.doneStatus === 'You Win! Awesome! :)' ?
+                "gameWin" : "gameLose"}>
+                <strong>{props.doneStatus}</strong>
+            </h2>
             <button className="btn btn-secondary" onClick={props.resetGame}>
                 Play Again?
       </button>
@@ -131,6 +137,7 @@ class Game extends React.Component {
         super();
         this.state = Game.initialState();
         this.timer = 0;
+        Numbers.list = _.range(1, 10);
     }
     resetGame = () => { this.setState(Game.initialState()) };
     stopTimer = () => {
@@ -246,7 +253,8 @@ class Game extends React.Component {
                         answerIsCorrect={answerIsCorrect}
                         acceptAnswer={this.acceptAnswer}
                         redraw={this.redraw}
-                        redraws={redraws} />
+                        redraws={redraws}
+                        doneStatus={doneStatus} />
                     <Answer selectedNumbers={selectedNumbers}
                         unselectNumber={this.unselectNumber} />
                 </div>
